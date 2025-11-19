@@ -6,6 +6,8 @@ class GameLoop implements Runnable {
     private final GameWindow gameWindow;
     private final GameTimerProcessor timerProcessor;
     private final GameEventDispatcher eventDispatcher;
+    private volatile Thread thread;
+    private boolean preventiveStop;
 
     GameLoop(GameWindow gameWindow, GameTimerProcessor timerProcessor, GameEventDispatcher eventDispatcher, GameFPSCounter fpsCounter, GameConfig gameConfig) {
         this.gameWindow = gameWindow;
@@ -17,9 +19,8 @@ class GameLoop implements Runnable {
     }
 
     @Override
-    @SuppressWarnings("InfiniteLoopStatement")
     public void run() {
-        for (;;) {
+        while (!this.preventiveStop) {
             this.fpsCounter.countFrame();
 
             this.timerProcessor.processTimers();
@@ -37,7 +38,12 @@ class GameLoop implements Runnable {
     }
 
     public void start() {
-        new Thread(this)
-                .start();
+        this.thread = new Thread(this);
+        this.thread.start();
+    }
+
+    public void stop() {
+        this.thread = null;
+        this.preventiveStop = true;
     }
 }

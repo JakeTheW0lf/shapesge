@@ -3,6 +3,8 @@ package fri.shapesge.engine;
 import fri.shapesge.drawables.GameDrawable;
 import fri.shapesge.engine.soundsystem.GameSoundSystem;
 
+import java.awt.*;
+
 public class Game {
     private static final Game INSTANCE = new Game();
 
@@ -17,15 +19,15 @@ public class Game {
     private final GameParser gameParser;
     @SuppressWarnings("FieldCanBeLocal")
     private final GameFPSCounter gameFPSCounter;
-    private final GameLoop gameLoop;
+    private GameLoop gameLoop;
     private final GameEventDispatcher gameEventDispatcher;
     @SuppressWarnings("FieldCanBeLocal")
     private final GameInputProcessor gameInputProcessor;
     @SuppressWarnings("FieldCanBeLocal")
     private final GameTimerProcessor gameTimerProcessor;
     private final GameObjects gameObjects;
-    private final GameWindow gameWindow;
-    private final GameSoundSystem gameSoundSystem;
+    private GameWindow gameWindow;
+    private GameSoundSystem gameSoundSystem;
 
     private Game() {
         var gameConfig = new GameConfig();
@@ -92,5 +94,30 @@ public class Game {
 
     public GameSoundSystem getGameSoundSystem() {
         return this.gameSoundSystem;
+    }
+
+    public void reset() {
+        this.gameLoop.stop();
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
+        INSTANCE.gameWindow.dispose();
+
+        var gameConfig = new GameConfig();
+
+        this.gameWindow = new GameWindow(
+                this.gameObjects,
+                this.gameInputProcessor,
+                this.gameFPSCounter,
+                gameConfig,
+                this.gameParser,
+                this.gameEventDispatcher
+        );
+        this.gameSoundSystem = new GameSoundSystem(this.gameParser);
+        this.gameLoop = new GameLoop(
+                this.gameWindow,
+                this.gameTimerProcessor,
+                this.gameEventDispatcher,
+                this.gameFPSCounter,
+                gameConfig
+        );
     }
 }

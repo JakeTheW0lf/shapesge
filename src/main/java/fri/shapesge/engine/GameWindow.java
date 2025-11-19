@@ -1,7 +1,6 @@
 package fri.shapesge.engine;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -120,6 +119,10 @@ class GameWindow {
                 this.frame.setVisible(true);
             }
         }
+    }
+
+    public void dispose() {
+        this.frame.dispose();
     }
 
     private class GamePanel extends Canvas {
